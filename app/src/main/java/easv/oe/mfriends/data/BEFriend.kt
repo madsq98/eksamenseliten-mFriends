@@ -10,6 +10,7 @@ data class BEFriend(
     var name: String,
     var phone: String,
     var email: String,
+    var imageUrl: String,
     var isFavorite: Boolean
     ) : Serializable {
 }

@@ -20,8 +20,8 @@ class FriendService private constructor(private val context: Context) : Serializ
 
     fun getAll(): LiveData<List<BEFriend>> = friendDao.getAll()
 
-    fun addFriend(name: String, phoneNumber: String, email: String, isFavorite: Boolean) {
-        val newFriend = BEFriend(0, name, phoneNumber, email, isFavorite)
+    fun addFriend(name: String, phoneNumber: String, email: String, imageUrl: String, isFavorite: Boolean) {
+        val newFriend = BEFriend(0, name, phoneNumber, email, imageUrl, isFavorite)
 
         executor.execute { friendDao.insert(newFriend) }
     }
@@ -39,7 +39,7 @@ class FriendService private constructor(private val context: Context) : Serializ
     }
 
     fun deleteFriend(id: Int) {
-        executor.execute { friendDao.delete(BEFriend(id,"","","",false)) }
+        executor.execute { friendDao.delete(BEFriend(id,"","","","", false)) }
     }
 
     companion object {

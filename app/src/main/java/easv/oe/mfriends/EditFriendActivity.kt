@@ -2,26 +2,34 @@ package easv.oe.mfriends
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
+import android.util.Base64
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Observer
 import easv.oe.mfriends.data.BEFriend
 import easv.oe.mfriends.data.FriendService
 import kotlinx.android.synthetic.main.activity_edit_friend.*
+import java.io.ByteArrayOutputStream
+
 
 class EditFriendActivity : AppCompatActivity() {
     private lateinit var friendsList: FriendService
     var isEditMode : Boolean = false
     var editFriendId : Int = 0
-
+    val REQUEST_IMAGE_CAPTURE = 1
     var editFriendObject: BEFriend? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val errorMessage = "No application found to handle action!"
         if(intent.extras != null) {
             val b = intent.extras!!
 
@@ -45,6 +53,10 @@ class EditFriendActivity : AppCompatActivity() {
             val getOneObserver = Observer<BEFriend>{ friend ->
                 if(isEditMode) {
                     editFriendObject = friend
+                    val img = friend.imageUrl
+                    if(img.isNotEmpty())
+                        FriendImage.setImageBitmap(StringToBitMap(img))
+
                     FriendName.setText(friend.name)
                     FriendPhone.setText(friend.phone)
                     FriendEmail.setText(friend.email)
@@ -61,6 +73,17 @@ class EditFriendActivity : AppCompatActivity() {
         //Handler for Back Button
         GoBackButton.setOnClickListener {
             endEditFriendActivity()
+        }
+
+        //Handler for Take Photo Button
+        TakeImageButton.setOnClickListener {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+            try {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
 
         //Handler for Delete Friend Button
@@ -85,13 +108,15 @@ class EditFriendActivity : AppCompatActivity() {
             val newName = FriendName.text.toString()
             val newPhone = FriendPhone.text.toString()
             val newEmail = FriendEmail.text.toString()
+            var newImage = ""
             val newIsFavorite = IsFavorite.isChecked
 
             if(newName.isEmpty() || newPhone.isEmpty() || newEmail.isEmpty()) {
                 Toast.makeText(this, "Name and/or phone cannot be empty!", Toast.LENGTH_SHORT).show()
             } else {
+                newImage += BitMapToString(FriendImage.drawable.toBitmap())
                 if(!isEditMode) {
-                    val newFriend = friendsList.addFriend(newName, newPhone, newEmail, newIsFavorite)
+                    val newFriend = friendsList.addFriend(newName, newPhone, newEmail, newImage, newIsFavorite)
                     Toast.makeText(
                         this,
                         "Friend was saved",
@@ -102,7 +127,7 @@ class EditFriendActivity : AppCompatActivity() {
                         endEditFriendActivity()
                     }, 1500)
                 } else {
-                    val newObj = BEFriend(editFriendId, newName, newPhone, newEmail, newIsFavorite)
+                    val newObj = BEFriend(editFriendId, newName, newPhone, newEmail, newImage, newIsFavorite)
                     var finishString = "An error occured! Try again later."
                     if(friendsList.updateFriend(editFriendId, newObj)) {
                         finishString = "Friend " + newName + " with ID " + editFriendId + " was updated!"
@@ -117,7 +142,7 @@ class EditFriendActivity : AppCompatActivity() {
             }
         }
 
-        val errorMessage = "No application found to handle action!"
+
 
         //Handler for Call Friend Button
         FriendCallButton.setOnClickListener {
@@ -172,7 +197,33 @@ class EditFriendActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras!!.get("data") as Bitmap
+            FriendImage.setImageBitmap(imageBitmap)
+        }
+    }
+
     private fun endEditFriendActivity() {
         finish()
+    }
+
+    private fun BitMapToString(bitmap: Bitmap): String? {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val arr: ByteArray = baos.toByteArray()
+        return Base64.encodeToString(arr, Base64.DEFAULT)
+    }
+
+    private fun StringToBitMap(image: String?): Bitmap? {
+        return try {
+            val encodeByte =
+                Base64.decode(image, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+        } catch (e: Exception) {
+            e.message
+            null
+        }
     }
 }
