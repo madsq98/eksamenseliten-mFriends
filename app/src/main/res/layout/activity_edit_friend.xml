@@ -60,6 +60,15 @@
             android:hint="Friend Phone Number"
             android:layout_marginBottom="20dp"/>
 
+        <EditText
+            android:id="@+id/FriendEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:hint="Friend Email"
+            android:layout_marginBottom="20dp"/>
+
         <Switch
             android:id="@+id/IsFavorite"
             android:layout_width="match_parent"
