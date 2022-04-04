@@ -36,7 +36,6 @@ class EditFriendActivity : AppCompatActivity() {
 
         DeleteFriendButton.visibility = View.GONE
         ActionsBar.visibility = View.GONE
-        ActionsBarTitle.visibility = View.GONE
 
         if(isEditMode) {
             val editFriendObject = friendsList.getFriendById(editFriendId)!!
@@ -48,7 +47,6 @@ class EditFriendActivity : AppCompatActivity() {
 
             DeleteFriendButton.visibility = View.VISIBLE
             ActionsBar.visibility = View.VISIBLE
-            ActionsBarTitle.visibility = View.VISIBLE
         }
 
         //Handler for Back Button
