@@ -33,6 +33,8 @@ class EditFriendActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_friend)
 
         DeleteFriendButton.visibility = View.GONE
+        ActionsBar.visibility = View.GONE
+        ActionsBarTitle.visibility = View.GONE
 
         if(isEditMode) {
             val editFriendObject = friendsList.getFriendById(editFriendId)!!
@@ -43,17 +45,22 @@ class EditFriendActivity : AppCompatActivity() {
             IsFavorite.isChecked = editFriendObject.isFavorite
 
             DeleteFriendButton.visibility = View.VISIBLE
+            ActionsBar.visibility = View.VISIBLE
+            ActionsBarTitle.visibility = View.VISIBLE
         }
 
+        //Handler for Back Button
         GoBackButton.setOnClickListener {
             endEditFriendActivity()
         }
 
+        //Handler for Delete Friend Button
         DeleteFriendButton.setOnClickListener {
             friendsList.deleteFriend(editFriendId)
             endEditFriendActivity()
         }
 
+        //Handler for Save Friend Button
         SaveFriendButton.setOnClickListener {
             val newName = FriendName.text.toString()
             val newPhone = FriendPhone.text.toString()
@@ -88,6 +95,24 @@ class EditFriendActivity : AppCompatActivity() {
                     }, 1500)
                 }
             }
+        }
+
+        //Handler for Call Friend Button
+        FriendCallButton.setOnClickListener {
+            val phoneNumber = friendsList.getFriendById(editFriendId).phone
+            //DO STUFF
+        }
+
+        //Handler for SMS Friend Button
+        FriendSMSButton.setOnClickListener {
+            val phoneNumber = friendsList.getFriendById(editFriendId).phone
+            //DO STUFF
+        }
+
+        //Handler for Email Friend Button
+        FriendEmailButton.setOnClickListener {
+            val email = friendsList.getFriendById(editFriendId).email
+            //DO STUFF
         }
     }
 
