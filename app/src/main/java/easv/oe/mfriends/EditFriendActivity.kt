@@ -139,7 +139,7 @@ class EditFriendActivity : AppCompatActivity() {
             val uri = "mailto:" + email
 
             val mailIntent: Intent = Uri.parse(uri).let { mail ->
-                Intent(Intent.ACTION_SEND, mail)
+                Intent(Intent.ACTION_SENDTO, mail)
             }
 
             try {
