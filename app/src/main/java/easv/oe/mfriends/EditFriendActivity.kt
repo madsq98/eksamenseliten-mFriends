@@ -83,7 +83,7 @@ class EditFriendActivity : AppCompatActivity() {
 
                     Toast.makeText(this, finishString, Toast.LENGTH_SHORT).show()
 
-                    Handler().postDelayed({
+                    Handler(Looper.getMainLooper()).postDelayed({
                         endEditFriendActivity()
                     }, 1500)
                 }
