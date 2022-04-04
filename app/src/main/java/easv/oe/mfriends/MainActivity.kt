@@ -6,32 +6,33 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Debug
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import easv.oe.mfriends.model.BEFriend
-import easv.oe.mfriends.model.Friends
+import androidx.lifecycle.Observer
+import easv.oe.mfriends.data.BEFriend
+import easv.oe.mfriends.data.FriendService
 import kotlinx.android.synthetic.main.activity_friendlist.*
-import java.io.Console
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-    var friendsList = Friends()
+    private lateinit var friendsList : FriendService
 
+    /*
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             if (data != null) {
-                friendsList = data.extras!!.getSerializable("friendList") as Friends
+                friendsList = data.extras!!.getSerializable("friendList") as FriendService
             }
             setListFriendsAdapter()
         }
     }
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +40,12 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_friendlist)
 
+        FriendService.initialize(this)
+
         setListFriendsAdapter()
 
         AddFriendButton.setOnClickListener {
             val newBundle = Bundle()
-            newBundle.putSerializable("friendList", friendsList)
 
             startEditFriendActivity(newBundle)
         }
@@ -52,21 +54,25 @@ class MainActivity : AppCompatActivity() {
     private fun startEditFriendActivity(b: Bundle) {
         val newIntent = Intent(this, EditFriendActivity::class.java)
         newIntent.putExtras(b)
-        resultLauncher.launch(newIntent)
+        //resultLauncher.launch(newIntent)
+        startActivity(newIntent)
     }
 
     private fun setListFriendsAdapter() {
-        val adapter = FriendAdapter(this, friendsList.getAll())
-        lvFriends.adapter = adapter
+        friendsList = FriendService.get()
+        val getAllObserver = Observer<List<BEFriend>>{ friends ->
+            val adapter = FriendAdapter(this, friends.toTypedArray())
+            lvFriends.adapter = adapter
+        }
+
+        friendsList.getAll().observe(this, getAllObserver)
         lvFriends.setOnItemClickListener { _,_,pos, _ -> onFriendClick(pos) }
     }
 
     private fun onFriendClick(position: Int) {
-        println(position)
-        val id = friendsList.getFriendByIndex(position).id
+        val clickedFriend = lvFriends.getItemAtPosition(position) as BEFriend
         val newBundle = Bundle()
-        newBundle.putInt("editFriendId", id)
-        newBundle.putSerializable("friendList", friendsList)
+        newBundle.putInt("editFriendId", clickedFriend.id)
 
         startEditFriendActivity(newBundle)
     }

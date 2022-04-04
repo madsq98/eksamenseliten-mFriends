@@ -9,19 +9,22 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
-import easv.oe.mfriends.model.BEFriend
-import easv.oe.mfriends.model.Friends
+import androidx.lifecycle.Observer
+import easv.oe.mfriends.data.BEFriend
+import easv.oe.mfriends.data.FriendService
 import kotlinx.android.synthetic.main.activity_edit_friend.*
 
 class EditFriendActivity : AppCompatActivity() {
-    var friendsList : Friends = Friends()
+    private lateinit var friendsList: FriendService
     var isEditMode : Boolean = false
     var editFriendId : Int = 0
+
+    var editFriendObject: BEFriend? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if(intent.extras != null) {
             val b = intent.extras!!
-            friendsList = b.getSerializable("friendList") as Friends
+            //friendsList = b.getSerializable("friendList") as FriendService
 
             val editId = b.getInt("editFriendId")
             if(editId != null && editId > 0) {
@@ -34,19 +37,26 @@ class EditFriendActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_edit_friend)
 
+        friendsList = FriendService.get()
+
         DeleteFriendButton.visibility = View.GONE
         ActionsBar.visibility = View.GONE
 
         if(isEditMode) {
-            val editFriendObject = friendsList.getFriendById(editFriendId)!!
+            val getOneObserver = Observer<BEFriend>{ friend ->
+                if(isEditMode) {
+                    editFriendObject = friend
+                    FriendName.setText(friend.name)
+                    FriendPhone.setText(friend.phone)
+                    FriendEmail.setText(friend.email)
+                    IsFavorite.isChecked = friend.isFavorite
 
-            FriendName.setText(editFriendObject.name)
-            FriendPhone.setText(editFriendObject.phone)
-            FriendEmail.setText(editFriendObject.email)
-            IsFavorite.isChecked = editFriendObject.isFavorite
+                    DeleteFriendButton.visibility = View.VISIBLE
+                    ActionsBar.visibility = View.VISIBLE
+                }
+            }
 
-            DeleteFriendButton.visibility = View.VISIBLE
-            ActionsBar.visibility = View.VISIBLE
+            friendsList.getFriendById(editFriendId).observe(this, getOneObserver)
         }
 
         //Handler for Back Button
@@ -56,8 +66,19 @@ class EditFriendActivity : AppCompatActivity() {
 
         //Handler for Delete Friend Button
         DeleteFriendButton.setOnClickListener {
+            isEditMode = false
+
             friendsList.deleteFriend(editFriendId)
-            endEditFriendActivity()
+
+            Toast.makeText(
+                this,
+                "Friend was deleted",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                endEditFriendActivity()
+            }, 1500)
         }
 
         //Handler for Save Friend Button
@@ -74,7 +95,7 @@ class EditFriendActivity : AppCompatActivity() {
                     val newFriend = friendsList.addFriend(newName, newPhone, newEmail, newIsFavorite)
                     Toast.makeText(
                         this,
-                        "Friend " + newFriend.name + " was saved with ID " + newFriend.id,
+                        "Friend was saved",
                         Toast.LENGTH_SHORT
                     ).show()
 
@@ -101,7 +122,7 @@ class EditFriendActivity : AppCompatActivity() {
 
         //Handler for Call Friend Button
         FriendCallButton.setOnClickListener {
-            val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
+            val phoneNumber = editFriendObject?.phone
             val uri = "tel:" + phoneNumber
 
             val callIntent: Intent = Uri.parse(uri).let { number ->
@@ -117,7 +138,7 @@ class EditFriendActivity : AppCompatActivity() {
 
         //Handler for SMS Friend Button
         FriendSMSButton.setOnClickListener {
-            val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
+            val phoneNumber = editFriendObject?.phone
             val uri = "smsto:" + phoneNumber
 
             val messageIntent: Intent = Uri.parse(uri).let { number ->
@@ -135,7 +156,7 @@ class EditFriendActivity : AppCompatActivity() {
 
         //Handler for Email Friend Button
         FriendEmailButton.setOnClickListener {
-            val email = friendsList.getFriendById(editFriendId)?.email
+            val email = editFriendObject?.email
             val uri = "mailto:" + email
 
             val mailIntent: Intent = Uri.parse(uri).let { mail ->
@@ -153,11 +174,11 @@ class EditFriendActivity : AppCompatActivity() {
     }
 
     private fun endEditFriendActivity() {
-        val i = Intent()
-        val b = Bundle()
-        b.putSerializable("friendList",friendsList)
-        i.putExtras(b)
-        setResult(RESULT_OK, i)
+        //val i = Intent()
+        //val b = Bundle()
+        //b.putSerializable("friendList",friendsList)
+        //i.putExtras(b)
+        //setResult(RESULT_OK, i)
         finish()
     }
 }
