@@ -126,6 +126,8 @@ class EditFriendActivity : AppCompatActivity() {
                 Intent(Intent.ACTION_SENDTO, number)
             }
 
+            messageIntent.putExtra(Intent.EXTRA_TEXT, "From Awesome Friends List: ")
+
             try {
                 startActivity(messageIntent)
             } catch (e: ActivityNotFoundException) {
@@ -141,6 +143,8 @@ class EditFriendActivity : AppCompatActivity() {
             val mailIntent: Intent = Uri.parse(uri).let { mail ->
                 Intent(Intent.ACTION_SENDTO, mail)
             }
+
+            mailIntent.putExtra(Intent.EXTRA_SUBJECT, "From Awesome Friends List: ")
 
             try {
                 startActivity(mailIntent)
