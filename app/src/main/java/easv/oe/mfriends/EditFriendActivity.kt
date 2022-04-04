@@ -1,6 +1,8 @@
 package easv.oe.mfriends
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -97,22 +99,42 @@ class EditFriendActivity : AppCompatActivity() {
             }
         }
 
+        val errorMessage = "No application found to handle action!"
+
         //Handler for Call Friend Button
         FriendCallButton.setOnClickListener {
-            val phoneNumber = friendsList.getFriendById(editFriendId).phone
-            //DO STUFF
+            val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
+            val uri = "tel:" + phoneNumber
+            val callIntent: Intent = Uri.parse(uri).let { number ->
+                Intent(Intent.ACTION_DIAL, number)
+            }
+            try {
+                startActivity(callIntent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
 
         //Handler for SMS Friend Button
         FriendSMSButton.setOnClickListener {
-            val phoneNumber = friendsList.getFriendById(editFriendId).phone
+            val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
             //DO STUFF
         }
 
         //Handler for Email Friend Button
         FriendEmailButton.setOnClickListener {
-            val email = friendsList.getFriendById(editFriendId).email
-            //DO STUFF
+            val email = friendsList.getFriendById(editFriendId)?.email
+            val uri = "mailto:" + email
+
+            val mailIntent: Intent = Uri.parse(uri).let { mail ->
+                Intent(Intent.ACTION_SEND, mail)
+            }
+
+            try {
+                startActivity(mailIntent)
+            } catch(e: ActivityNotFoundException) {
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
