@@ -59,10 +59,7 @@ class Friends : Serializable {
         return null
     }
 
-    fun getFriendByIndex(index: Int): BEFriend? {
-        if(index > mFriends.size)
-            return null
-        else
-            return mFriends[index]
+    fun getFriendByIndex(index: Int): BEFriend {
+        return mFriends[index]
     }
 }

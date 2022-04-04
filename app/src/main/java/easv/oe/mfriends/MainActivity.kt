@@ -60,9 +60,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onFriendClick(position: Int) {
-        val id = friendsList.getFriendByIndex(position)!!.id
+        println(position)
+        val id = friendsList.getFriendByIndex(position).id
         val newBundle = Bundle()
         newBundle.putInt("editFriendId", id)
+        newBundle.putSerializable("friendList", friendsList)
 
         startEditFriendActivity(newBundle)
     }
