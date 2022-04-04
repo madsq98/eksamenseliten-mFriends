@@ -105,9 +105,11 @@ class EditFriendActivity : AppCompatActivity() {
         FriendCallButton.setOnClickListener {
             val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
             val uri = "tel:" + phoneNumber
+
             val callIntent: Intent = Uri.parse(uri).let { number ->
                 Intent(Intent.ACTION_DIAL, number)
             }
+
             try {
                 startActivity(callIntent)
             } catch (e: ActivityNotFoundException) {
@@ -118,7 +120,17 @@ class EditFriendActivity : AppCompatActivity() {
         //Handler for SMS Friend Button
         FriendSMSButton.setOnClickListener {
             val phoneNumber = friendsList.getFriendById(editFriendId)?.phone
-            //DO STUFF
+            val uri = "smsto:" + phoneNumber
+
+            val messageIntent: Intent = Uri.parse(uri).let { number ->
+                Intent(Intent.ACTION_SENDTO, number)
+            }
+
+            try {
+                startActivity(messageIntent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
 
         //Handler for Email Friend Button
