@@ -1,5 +1,6 @@
 package easv.oe.mfriends
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import easv.oe.mfriends.model.BEFriend
 import easv.oe.mfriends.model.Friends
 import kotlinx.android.synthetic.main.activity_friendlist.*
@@ -20,6 +22,16 @@ import java.io.Console
 
 class MainActivity : AppCompatActivity() {
     var friendsList = Friends()
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            if (data != null) {
+                friendsList = data.extras!!.getSerializable("friendList") as Friends
+            }
+            setListFriendsAdapter()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,17 +52,7 @@ class MainActivity : AppCompatActivity() {
     private fun startEditFriendActivity(b: Bundle) {
         val newIntent = Intent(this, EditFriendActivity::class.java)
         newIntent.putExtras(b)
-        startActivityForResult(newIntent, 0)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(data != null) {
-            friendsList = data.extras!!.getSerializable("friendList") as Friends
-
-            setListFriendsAdapter()
-        }
+        resultLauncher.launch(newIntent)
     }
 
     private fun setListFriendsAdapter() {
