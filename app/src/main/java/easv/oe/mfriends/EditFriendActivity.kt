@@ -24,7 +24,6 @@ class EditFriendActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         if(intent.extras != null) {
             val b = intent.extras!!
-            //friendsList = b.getSerializable("friendList") as FriendService
 
             val editId = b.getInt("editFriendId")
             if(editId != null && editId > 0) {
@@ -174,11 +173,6 @@ class EditFriendActivity : AppCompatActivity() {
     }
 
     private fun endEditFriendActivity() {
-        //val i = Intent()
-        //val b = Bundle()
-        //b.putSerializable("friendList",friendsList)
-        //i.putExtras(b)
-        //setResult(RESULT_OK, i)
         finish()
     }
 }

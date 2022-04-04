@@ -22,18 +22,6 @@ import java.lang.Exception
 class MainActivity : AppCompatActivity() {
     private lateinit var friendsList : FriendService
 
-    /*
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            if (data != null) {
-                friendsList = data.extras!!.getSerializable("friendList") as FriendService
-            }
-            setListFriendsAdapter()
-        }
-    }
-     */
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     private fun startEditFriendActivity(b: Bundle) {
         val newIntent = Intent(this, EditFriendActivity::class.java)
         newIntent.putExtras(b)
-        //resultLauncher.launch(newIntent)
         startActivity(newIntent)
     }
 
