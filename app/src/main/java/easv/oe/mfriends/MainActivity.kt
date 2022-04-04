@@ -30,12 +30,17 @@ class MainActivity : AppCompatActivity() {
         setListFriendsAdapter()
 
         AddFriendButton.setOnClickListener {
-            val newIntent = Intent(this, EditFriendActivity::class.java)
             val newBundle = Bundle()
             newBundle.putSerializable("friendList", friendsList)
-            newIntent.putExtras(newBundle)
-            startActivityForResult(newIntent, 0)
+
+            startEditFriendActivity(newBundle)
         }
+    }
+
+    private fun startEditFriendActivity(b: Bundle) {
+        val newIntent = Intent(this, EditFriendActivity::class.java)
+        newIntent.putExtras(b)
+        startActivityForResult(newIntent, 0)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -50,8 +55,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun setListFriendsAdapter() {
         val adapter = FriendAdapter(this, friendsList.getAll())
-
         lvFriends.adapter = adapter
+        lvFriends.setOnItemClickListener { _,_,pos, _ -> onFriendClick(pos) }
+    }
+
+    private fun onFriendClick(position: Int) {
+        val id = friendsList.getFriendByIndex(position)!!.id
+        val newBundle = Bundle()
+        newBundle.putInt("editFriendId", id)
+
+        startEditFriendActivity(newBundle)
     }
 
     internal class FriendAdapter(context: Context,

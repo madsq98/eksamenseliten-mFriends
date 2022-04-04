@@ -29,6 +29,14 @@ class EditFriendActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_edit_friend)
 
+        if(isEditMode) {
+            val editFriendObject = friendsList.getFriendById(editFriendId)!!
+
+            FriendName.setText(editFriendObject.name)
+            FriendPhone.setText(editFriendObject.phone)
+            IsFavorite.isChecked = editFriendObject.isFavorite
+        }
+
         GoBackButton.setOnClickListener {
             endEditFriendActivity()
         }

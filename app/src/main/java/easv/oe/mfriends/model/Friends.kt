@@ -49,4 +49,20 @@ class Friends : Serializable {
 
         return newFriend
     }
+
+    fun getFriendById(id : Int): BEFriend? {
+        for(friend in mFriends) {
+            if(friend.id == id)
+                return friend
+        }
+
+        return null
+    }
+
+    fun getFriendByIndex(index: Int): BEFriend? {
+        if(index > mFriends.size)
+            return null
+        else
+            return mFriends[index]
+    }
 }
