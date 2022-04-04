@@ -1,36 +1,52 @@
-package com.easv.oe.friends.Model
+package easv.oe.mfriends.model
+
+import java.io.Serializable
 
 
-class Friends {
+class Friends : Serializable {
 
-    val mFriends = arrayOf<BEFriend>(
-        BEFriend("Simon", "123", true),
-        BEFriend("Dennis", "1234", false),
-        BEFriend("Mina", "12345", true),
-        BEFriend("Emil", "12345678", true),
-        BEFriend("Mads", "23456789", true),
-        BEFriend("Martin", "87654321", false),
-        BEFriend("Mike", "12121212", true),
-        BEFriend("Trine", "123", true),
-        BEFriend("Mathias", "1234", false),
-        BEFriend("Rasmus", "12345", true),
-        BEFriend("Christian", "12345678", true),
-        BEFriend("Peter", "23456789", true),
-        BEFriend("Anders", "87654321", false),
-        BEFriend("Mikkel", "12121212", true),
-        BEFriend("Flemming", "123", true),
-        BEFriend("Jonas", "1234", false),
-        BEFriend("Frederik", "12345", true),
-        BEFriend("Mantas", "12345678", true),
-        BEFriend("Michael", "23456789", true),
-        BEFriend("Jens", "87654321", false),
-        BEFriend("Jan", "12121212", true)
+    /*
+    val mFriends = mutableListOf<BEFriend>(
+        BEFriend(1,"Simon", "123", true),
+        BEFriend(2,"Dennis", "1234", false),
+        BEFriend(3,"Mina", "12345", true),
+        BEFriend(4,"Emil", "12345678", true),
+        BEFriend(5,"Mads", "23456789", true),
+        BEFriend(6,"Martin", "87654321", false),
+        BEFriend(7,"Mike", "12121212", true),
+        BEFriend(8,"Trine", "123", true),
+        BEFriend(9,"Mathias", "1234", false),
+        BEFriend(10,"Rasmus", "12345", true),
+        BEFriend(11,"Christian", "12345678", true),
+        BEFriend(12,"Peter", "23456789", true),
+        BEFriend(13,"Anders", "87654321", false),
+        BEFriend(14,"Mikkel", "12121212", true),
+        BEFriend(15,"Flemming", "123", true),
+        BEFriend(16,"Jonas", "1234", false),
+        BEFriend(17,"Frederik", "12345", true),
+        BEFriend(18,"Mantas", "12345678", true),
+        BEFriend(19,"Michael", "23456789", true),
+        BEFriend(20,"Jens", "87654321", false),
+        BEFriend(21,"Jan", "12121212", true)
     )
+     */
 
-    fun getAll(): Array<BEFriend> = mFriends
+    val mFriends = mutableListOf<BEFriend>()
 
+    fun getAll(): Array<BEFriend> = mFriends.toTypedArray()
 
-    fun getAllNames(): Array<String> = mFriends.map { p -> p.name }.toTypedArray()
+    private fun getNextId(): Int {
+        return if(mFriends.size > 0)
+            mFriends[mFriends.size - 1].id + 1
+        else
+            1
+    }
 
+    fun addFriend(name: String, phoneNumber: String, isFavorite: Boolean): BEFriend {
+        val newId = getNextId()
+        val newFriend = BEFriend(newId, name, phoneNumber, isFavorite)
+        mFriends.add(newFriend)
 
+        return newFriend
+    }
 }

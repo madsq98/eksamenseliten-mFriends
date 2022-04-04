@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MFriends">
         <activity
+            android:name=".EditFriendActivity"
+            android:exported="false" />
+        <activity
             android:name=".ActivityFriendlist3"
             android:exported="false" />
         <activity

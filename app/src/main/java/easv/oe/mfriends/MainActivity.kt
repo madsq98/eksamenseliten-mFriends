@@ -5,22 +5,51 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Debug
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import com.easv.oe.friends.Model.BEFriend
-import com.easv.oe.friends.Model.Friends
+import android.widget.Toast
+import easv.oe.mfriends.model.BEFriend
+import easv.oe.mfriends.model.Friends
 import kotlinx.android.synthetic.main.activity_friendlist.*
+import java.io.Console
 
 class MainActivity : AppCompatActivity() {
+    var friendsList = Friends()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.hide()
         setContentView(R.layout.activity_friendlist)
 
-        val adapter = FriendAdapter(this, Friends().getAll())
+        setListFriendsAdapter()
+
+        AddFriendButton.setOnClickListener {
+            val newIntent = Intent(this, EditFriendActivity::class.java)
+            val newBundle = Bundle()
+            newBundle.putSerializable("friendList", friendsList)
+            newIntent.putExtras(newBundle)
+            startActivityForResult(newIntent, 0)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(data != null) {
+            friendsList = data.extras!!.getSerializable("friendList") as Friends
+
+            setListFriendsAdapter()
+        }
+    }
+
+    private fun setListFriendsAdapter() {
+        val adapter = FriendAdapter(this, friendsList.getAll())
 
         lvFriends.adapter = adapter
     }
