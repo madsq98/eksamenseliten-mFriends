@@ -4,7 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import android.widget.Toast
+import easv.oe.mfriends.model.BEFriend
 import easv.oe.mfriends.model.Friends
 import kotlinx.android.synthetic.main.activity_edit_friend.*
 
@@ -29,15 +31,24 @@ class EditFriendActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_edit_friend)
 
+        DeleteFriendButton.visibility = View.GONE
+
         if(isEditMode) {
             val editFriendObject = friendsList.getFriendById(editFriendId)!!
 
             FriendName.setText(editFriendObject.name)
             FriendPhone.setText(editFriendObject.phone)
             IsFavorite.isChecked = editFriendObject.isFavorite
+
+            DeleteFriendButton.visibility = View.VISIBLE
         }
 
         GoBackButton.setOnClickListener {
+            endEditFriendActivity()
+        }
+
+        DeleteFriendButton.setOnClickListener {
+            friendsList.deleteFriend(editFriendId)
             endEditFriendActivity()
         }
 
@@ -49,12 +60,30 @@ class EditFriendActivity : AppCompatActivity() {
             if(newName.isEmpty() || newPhone.isEmpty()) {
                 Toast.makeText(this, "Name and/or phone cannot be empty!", Toast.LENGTH_SHORT).show()
             } else {
-                val newFriend = friendsList.addFriend(newName, newPhone, newIsFavorite)
-                Toast.makeText(this, "Friend " + newFriend.name + " was saved with ID " + newFriend.id, Toast.LENGTH_SHORT).show()
+                if(!isEditMode) {
+                    val newFriend = friendsList.addFriend(newName, newPhone, newIsFavorite)
+                    Toast.makeText(
+                        this,
+                        "Friend " + newFriend.name + " was saved with ID " + newFriend.id,
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                Handler().postDelayed({
-                    endEditFriendActivity()
-                },2000)
+                    Handler().postDelayed({
+                        endEditFriendActivity()
+                    }, 1500)
+                } else {
+                    val newObj = BEFriend(editFriendId, newName, newPhone, newIsFavorite)
+                    var finishString = "An error occured! Try again later."
+                    if(friendsList.updateFriend(editFriendId, newObj)) {
+                        finishString = "Friend " + newName + " with ID " + editFriendId + " was updated!"
+                    }
+
+                    Toast.makeText(this, finishString, Toast.LENGTH_SHORT).show()
+
+                    Handler().postDelayed({
+                        endEditFriendActivity()
+                    }, 1500)
+                }
             }
         }
     }

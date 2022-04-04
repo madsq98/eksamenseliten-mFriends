@@ -71,7 +71,14 @@
             android:id="@+id/SaveFriendButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Friend" />
+            android:text="Save Friend"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/DeleteFriendButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete Friend" />
 
 
     </LinearLayout>

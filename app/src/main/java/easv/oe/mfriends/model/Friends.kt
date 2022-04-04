@@ -4,8 +4,6 @@ import java.io.Serializable
 
 
 class Friends : Serializable {
-
-    /*
     val mFriends = mutableListOf<BEFriend>(
         BEFriend(1,"Simon", "123", true),
         BEFriend(2,"Dennis", "1234", false),
@@ -29,9 +27,6 @@ class Friends : Serializable {
         BEFriend(20,"Jens", "87654321", false),
         BEFriend(21,"Jan", "12121212", true)
     )
-     */
-
-    val mFriends = mutableListOf<BEFriend>()
 
     fun getAll(): Array<BEFriend> = mFriends.toTypedArray()
 
@@ -41,6 +36,16 @@ class Friends : Serializable {
         else
             1
     }
+
+    private fun getIndexFromId(id : Int): Int {
+        for(i in 0..mFriends.size) {
+            if(mFriends[i].id == id)
+                return i
+        }
+
+        return -1
+    }
+
 
     fun addFriend(name: String, phoneNumber: String, isFavorite: Boolean): BEFriend {
         val newId = getNextId()
@@ -61,5 +66,27 @@ class Friends : Serializable {
 
     fun getFriendByIndex(index: Int): BEFriend {
         return mFriends[index]
+    }
+
+    fun updateFriend(id: Int, obj: BEFriend): Boolean {
+        val index = getIndexFromId(id)
+
+        if(index >= 0) {
+            mFriends[index] = obj
+            return true
+        }
+
+        return false
+    }
+
+    fun deleteFriend(id: Int): Boolean {
+        val index = getIndexFromId(id)
+
+        if(index >= 0) {
+            mFriends.removeAt(index)
+            return true
+        }
+
+        return false
     }
 }
